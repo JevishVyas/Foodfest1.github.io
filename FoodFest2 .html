@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Photo Menu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: auto;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .menu-item {
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+
+    .menu-item img {
+      width: 100%;
+      max-width: 120px;
+      height: auto;
+      object-fit: cover;
+      margin-right: 20px;
+      border-radius: 8px;
+    }
+
+    .menu-item-details {
+      flex-grow: 1;
+      min-width: 200px;
+    }
+
+    .menu-item-title {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .menu-item-desc {
+      color: #555;
+      margin: 5px 0;
+    }
+
+    .menu-item-price {
+      color: #008000;
+      font-weight: bold;
+    }
+
+    .add-btn {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .add-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .quantity-input {
+      width: 50px;
+      padding: 5px;
+      margin-top: 5px;
+      margin-right: 10px;
+    }
+
+    #cart-preview {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+
+    #cart-button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    #cart-button:hover {
+      background-color: darkgreen;
+    }
+
+    .upi-section {
+      margin-top: 40px;
+      padding: 10px;
+      background: #e6ffe6;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      color: #2a7b2a;
+    }
+
+    @media screen and (max-width: 480px) {
+      .menu-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .menu-item img {
+        margin-right: 0;
+        margin-bottom: 10px;
+        max-width: 100%;
+      }
+
+      .quantity-input {
+        width: 100%;
+      }
+
+      .add-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Our Menu</h1>
+
+  <!-- Pesto Sandwich -->
+  <div class="menu-item">
+    <img src="https://i.ibb.co/LD0mqC4X/IMG-20250716-200459.jpg" alt="Full Pesto Sandwich" />
+    <div class="menu-item-details">
+      <div class="menu-item-title">Full Pesto Sandwich</div>
+      <div class="menu-item-desc">Delicious Pesto Sandwich with creamy sauce and herbs.</div>
+      <div class="menu-item-price">60rs</div>
+      <input type="number" min="1" value="1" class="quantity-input" id="qty-0" />
+      <button class="add-btn" onclick="addToCart('Full Pesto Sandwich', 60, 'qty-0')">Add to Cart</button>
+    </div>
+  </div>
+
+  <!-- Monaco Biscuit Canapes -->
+  <div class="menu-item">
+    <img src="https://i.ibb.co/SXTpt7M8/IMG-20250716-200421.jpg" alt="Full Plate Monaco" />
+    <div class="menu-item-details">
+      <div class="menu-item-title">Full Plate Monaco</div>
+      <div class="menu-item-desc">Biscuit base paired with fresh, flavorful toppings</div>
+      <div class="menu-item-price">60rs</div>
+      <input type="number" min="1" value="1" class="quantity-input" id="qty-1" />
+      <button class="add-btn" onclick="addToCart('Full Plate Monaco', 60, 'qty-1')">Add to Cart</button>
+    </div>
+  </div>
+
+  <!-- Kokum Juice -->
+  <div class="menu-item">
+    <img src="https://i.ibb.co/wh0wYGZL/IMG-20250716-200433.jpg" alt="1 Glass Kokum Juice" />
+    <div class="menu-item-details">
+      <div class="menu-item-title">1 Glass Kokum Juice</div>
+      <div class="menu-item-desc">Refresh Your Senses with the Tangy Sweetness of Kokum Sharbat!</div>
+      <div class="menu-item-price">50rs</div>
+      <input type="number" min="1" value="1" class="quantity-input" id="qty-2" />
+      <button class="add-btn" onclick="addToCart('1 Glass Kokum Juice', 50, 'qty-2')">Add to Cart</button>
+    </div>
+  </div>
+
+  <div id="cart-preview">
+    <p>Your cart is empty.</p>
+  </div>
+
+  <button id="cart-button" onclick="sendOrderToWhatsApp()">Send Order via WhatsApp</button>
+
+  <div class="upi-section">
+    Pay via UPI:<br />
+    <a href="upi://pay?pa=jevishvyas.ele17d-1@okhdfcbank&pn=Jevish%20Vyas" target="_blank" style="display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #2a7b2a; color: white; text-decoration: none; border-radius: 8px;">
+      Pay to jevishvyas.ele17d-1@okhdfcbank
+    </a>
+  </div>
+
+  <script>
+    let cart = [];
+
+    function addToCart(itemName, price, qtyId) {
+      const qty = parseInt(document.getElementById(qtyId).value);
+      if (isNaN(qty) || qty < 1) return;
+
+      const existing = cart.find(item => item.item === itemName);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({ item: itemName, price: price, qty: qty });
+      }
+
+      updateCartPreview();
+      alert(qty + " x " + itemName + " added to cart!");
+    }
+
+    function updateCartPreview() {
+      const cartDiv = document.getElementById('cart-preview');
+      if (cart.length === 0) {
+        cartDiv.innerHTML = '<p>Your cart is empty.</p>';
+        return;
+      }
+
+      let html = '<h3>Cart Preview</h3><ul>';
+      let total = 0;
+
+      cart.forEach(item => {
+        html += `<li>${item.qty} x ${item.item} - ₹${item.qty * item.price}</li>`;
+        total += item.qty * item.price;
+      });
+
+      html += `</ul><strong>Total: ₹${total}</strong>`;
+      cartDiv.innerHTML = html;
+    }
+
+    function sendOrderToWhatsApp() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      let message = "Hello! I'd like to order:\n\n";
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        message += `${index + 1}. ${item.qty} x ${item.item} - ₹${item.qty * item.price}\n`;
+        total += item.qty * item.price;
+      });
+
+      message += `\nTotal: ₹${total}`;
+      const phoneNumber = "917048107771";
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+      window.open(whatsappURL, '_blank');
+    }
+  </script>
+</body>
+</html>
