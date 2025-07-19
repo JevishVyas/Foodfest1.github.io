@@ -577,14 +577,40 @@ function sendOrderToWhatsApp() {
 function incrementQty(qtyId) {
   const input = document.getElementById(qtyId);
   let currentVal = parseInt(input.value) || 0;
-  input.value = currentVal + 1;
+  const newQty = currentVal + 1;
+  input.value = newQty;
+
+  // Update cart if item already exists
+  const itemName = getItemNameFromQtyId(qtyId);
+  const item = cart.find(c => c.item === itemName);
+  if (item) {
+    item.qty = newQty;
+    updateCartPreview(); // 🟢 Update preview instantly
+  }
 }
+
 
 function decrementQty(qtyId) {
   const input = document.getElementById(qtyId);
   let currentVal = parseInt(input.value) || 0;
+
   if (currentVal > 0) {
-    input.value = currentVal - 1;
+    const newQty = currentVal - 1;
+    input.value = newQty;
+
+    // 🧠 Now update cart if this item exists
+    const itemName = getItemNameFromQtyId(qtyId);
+    const item = cart.find(c => c.item === itemName);
+    if (item) {
+      if (newQty === 0) {
+        // Remove from cart
+        cart = cart.filter(c => c.item !== itemName);
+      } else {
+        // Just update quantity
+        item.qty = newQty;
+      }
+      updateCartPreview(); // 🔁 update UI
+    }
   }
 }
 
