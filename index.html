@@ -678,7 +678,13 @@ function slidePrev(id) {
   sliderIndex[id] = (sliderIndex[id] - 1 + maxSlides) % maxSlides;
   slider.style.transform = `translateX(-${sliderIndex[id] * 120}px)`;
 }
-
+function getItemNameFromQtyId(qtyId) {
+  // Match the ID with the correct item name from DOM
+  const input = document.getElementById(qtyId);
+  const menuItem = input.closest(".menu-item");
+  const title = menuItem.querySelector(".menu-item-title").innerText.trim();
+  return title;
+}
 
 </script>
 </body>
