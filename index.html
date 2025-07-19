@@ -614,6 +614,7 @@ function decrementQty(qtyId) {
   }
 }
 
+
 function showUpiQr() {
   const total = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
   if (total === 0) {
@@ -678,6 +679,7 @@ function slidePrev(id) {
   sliderIndex[id] = (sliderIndex[id] - 1 + maxSlides) % maxSlides;
   slider.style.transform = `translateX(-${sliderIndex[id] * 120}px)`;
 }
+
 function getItemNameFromQtyId(qtyId) {
   // Match the ID with the correct item name from DOM
   const input = document.getElementById(qtyId);
@@ -685,7 +687,6 @@ function getItemNameFromQtyId(qtyId) {
   const title = menuItem.querySelector(".menu-item-title").innerText.trim();
   return title;
 }
-
 </script>
 </body>
 </html>
