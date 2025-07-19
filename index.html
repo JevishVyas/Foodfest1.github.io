@@ -505,7 +505,7 @@ function addToCart(itemName, price, qtyId) {
 
   const existing = cart.find(item => item.item === itemName);
   if (existing) {
-    existing.qty += qty;
+    existing.qty = qty;
   } else {
     cart.push({ item: itemName, price: price, qty: qty });
   }
