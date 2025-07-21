@@ -164,7 +164,7 @@
       margin-top: 0;
     }
 
-    #cart-button, #payWithUpi1, #doneButton {
+    #cart-button, #payWithUpi1, #doneButton, #telegram-button {
       margin-top: 20px;
       padding: 12px 0;
       background-color: #2a7b2a;
@@ -181,12 +181,17 @@
     #doneButton {
       background-color: #ff4500;
     }
+    #telegram-button {
+    background-color: #006699;  
+    }
 
     #cart-button:hover,
     #payWithUpi1:hover,
-    #doneButton:hover {
+    #doneButton:hover, 
+    #telegram-button:hover {
       transform: scale(1.05);
     }
+    
 
     .upi-section {
       margin-top: 35px;
@@ -338,6 +343,7 @@
   }
 }
 
+
   </style>
 </head>
 <body>
@@ -478,7 +484,7 @@
 <input type="text" id="custName" placeholder="Your Name (Optional)" 
 style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; margin: 15px 0; font-size: 1rem;" />
 <button id="cart-button" onclick="sendOrderToWhatsApp()">Send Order via WhatsApp</button>
-
+<button id="telegram-button" onclick="sendOrderToTelegram()" style="...">Send Order to Telegram</button>
 <div class="upi-section">
   Pay via UPI:<br />
   <a id="upiPayLink" href="upi://pay?pa=jevishvyas.ele17d-1@okhdfcbank&pn=Jevish%20Vyas" target="_blank">
@@ -686,6 +692,64 @@ function getItemNameFromQtyId(qtyId) {
   const menuItem = input.closest(".menu-item");
   const title = menuItem.querySelector(".menu-item-title").innerText.trim();
   return title;
+}
+
+const TELEGRAM_BOT_TOKEN = '7661208917:AAH0zBGUeHHR3xi_K9NaOXFLvzHBC5Ccv5A';
+const TELEGRAM_CHAT_ID = '-1002647443684';
+
+function sendOrderToTelegram() {
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+
+  let orderNumber = localStorage.getItem('orderNumber');
+  if (orderNumber === null) {
+    orderNumber = 0;
+  } else {
+    orderNumber = parseInt(orderNumber);
+    orderNumber = (orderNumber >= 1000) ? 0 : orderNumber + 1;
+  }
+  localStorage.setItem('orderNumber', orderNumber);
+
+  const name = document.getElementById("custName").value.trim();
+
+  let message = "";
+  if (name !== "") {
+    message += `👤Name: ${name}\n`;
+  }
+  message += `📝 Order #${orderNumber}\n\n`;
+
+  let total = 0;
+  cart.forEach((item, index) => {
+    message += `${index + 1}. ${item.qty} x ${item.item} - ₹${item.qty * item.price}\n`;
+    total += item.qty * item.price;
+  });
+
+  message += `\n ☘️Total: ₹${total}`;
+
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: TELEGRAM_CHAT_ID,
+      text: message,
+      parse_mode: 'Markdown'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.ok) {
+      alert('Order sent to Telegram group!');
+    } else {
+      alert('Failed to send order: ' + data.description);
+    }
+  })
+  .catch(error => {
+    alert('Error sending order: ' + error.message);
+  });
 }
 </script>
 </body>
